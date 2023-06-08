@@ -1,0 +1,23 @@
+{
+    "name": "ssbu-toml-fixer",
+    "version": "1.0.0",
+    "description": "Updates names and categories of *.toml files in a directory using subdirectory names",
+    "main": "index.js",
+    "dependencies": {},
+    "devDependencies": {
+        "typescript": "^5.1.3"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/kyler-workman/ssbu-toml-fixer.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/kyler-workman/ssbu-toml-fixer/issues"
+    },
+    "homepage": "https://github.com/kyler-workman/ssbu-toml-fixer#readme"
+}
