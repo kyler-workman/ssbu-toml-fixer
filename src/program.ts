@@ -16,57 +16,66 @@ export function runScript():void{
 function processModFolder(runningDirectory:string, modFolderName:string){
     var modInfo = getModInfo(modFolderName);
     var tomlFilePath = `${runningDirectory}/${modFolderName}/info.toml`
+    var shouldWriteNewFile:false|string = false;
 
     if(!modInfo){
         logFileAction('ERROR', modFolderName, "Invalid folder name, skipping")
-    }else if(fs.existsSync(tomlFilePath)){
+    }else{
         var properCategoryName = NameToCategoryMapping[modInfo.category];
         var properDisplaynameLine = `display_name = "${modFolderName}"`;
         var properCategoryLine = `category = "${properCategoryName}"`;
 
-        var tomlFile = fs.readFileSync(tomlFilePath).toString().split('\n');
-        var tomlFileIsEdited = false;
+        if(fs.existsSync(tomlFilePath)){
+            var tomlFile = fs.readFileSync(tomlFilePath).toString().split('\n');
+            var tomlFileIsEdited = false;
 
-        var displaynameLine = tomlFile.findIndex(v => /^display_name\s?=\s?/.test(v))
-        if(displaynameLine != -1){
-            var displayNameSearch = /"(.*?)"/.exec(tomlFile[displaynameLine]);
-            if(displayNameSearch && displayNameSearch[1]){
-                var displayNameValue = displayNameSearch[1];
-                if(displayNameValue != modFolderName){
-                    tomlFileIsEdited = true;
-                    tomlFile[displaynameLine] = properDisplaynameLine
+            var displaynameLine = tomlFile.findIndex(v => /^display_name\s?=\s?/.test(v))
+            if(displaynameLine != -1){
+                var displayNameSearch = /"(.*?)"/.exec(tomlFile[displaynameLine]);
+                if(displayNameSearch && displayNameSearch[1]){
+                    var displayNameValue = displayNameSearch[1];
+                    if(displayNameValue != modFolderName){
+                        tomlFileIsEdited = true;
+                        tomlFile[displaynameLine] = properDisplaynameLine
+                    }
                 }
+            }else{
+                tomlFileIsEdited = true;
+                tomlFile.push(properDisplaynameLine);
             }
-        }else{
-            tomlFileIsEdited = true;
-            tomlFile.push(properDisplaynameLine);
-        }
 
-        var categoryLine = tomlFile.findIndex(v => /^category\s?=\s?/.test(v))
-        if(categoryLine != -1){
-            var categorySearch = /"(.*?)"/.exec(tomlFile[categoryLine])
-            if(categorySearch && categorySearch[1]){
-                var existingCategoryValue = categorySearch[1];
-                if(existingCategoryValue != properCategoryName){
-                    tomlFileIsEdited = true;
-                    tomlFile[categoryLine] = properCategoryLine
+            var categoryLine = tomlFile.findIndex(v => /^category\s?=\s?/.test(v))
+            if(categoryLine != -1){
+                var categorySearch = /"(.*?)"/.exec(tomlFile[categoryLine])
+                if(categorySearch && categorySearch[1]){
+                    var existingCategoryValue = categorySearch[1];
+                    if(existingCategoryValue != properCategoryName){
+                        tomlFileIsEdited = true;
+                        tomlFile[categoryLine] = properCategoryLine
+                    }
                 }
+            }else{
+                tomlFileIsEdited = true;
+                tomlFile.push(properCategoryLine)
             }
+
+            if(tomlFileIsEdited){
+                logFileAction('EDIT', modFolderName,'Existing file found, updating fields')
+                shouldWriteNewFile = tomlFile.join('\n');
+            }else{
+                logFileAction('NONE', modFolderName,'Existing file found, matches format')
+            }
+
         }else{
-            tomlFileIsEdited = true;
-            tomlFile.push(properCategoryLine)
+            logFileAction('NEW', modFolderName, "Missing .toml file, creating")
+            shouldWriteNewFile = [
+                properDisplaynameLine,
+                properCategoryLine
+            ].join('\n');
         }
 
-        if(tomlFileIsEdited){
-            logFileAction('EDIT', modFolderName,'Existing file found, updating fields')
-            var newFile = tomlFile.join('\n');
-            fs.writeFileSync(tomlFilePath, newFile);
-        }else{
-            logFileAction('NONE', modFolderName,'Existing file found, matches format')
-        }
-
-    }else{
-        logFileAction('NEW', modFolderName, "Missing .toml file, creating")
+        if(shouldWriteNewFile)
+            fs.writeFileSync(tomlFilePath, shouldWriteNewFile);
     }
 }
 
