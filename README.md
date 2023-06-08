@@ -4,9 +4,11 @@ Appropriately named mods will have their .toml files edited to have their "displ
 New .toml files will be created if a mod is missing one.
 
 # Preparation
-I'll make a release later, but for now
-
 Install node.js
+
+I think the release should work as long as you have node, I don't really know.
+
+If you want to build source.
 
 In a terminal at the root level of the project, run
  - `npm i`
