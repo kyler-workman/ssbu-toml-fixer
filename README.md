@@ -5,9 +5,12 @@ New .toml files will be created if a mod is missing one.
 
 # Preparation
 I'll make a release later, but for now
-install node
-`npm i`
-`tsc`
+
+Install node.js
+
+In a terminal at the root level of the project, run
+ - `npm i`
+ - `tsc`
 
 # Usage
 Make sure your mod folder names match the format `{Category}-{Mod Name}`
